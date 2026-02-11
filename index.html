@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>过年回家模拟器 v5.0</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="game-container">
+      <!-- ========== 开始页面 ========== -->
+      <section class="scene start-scene active" id="startScene">
+        <div class="start-bg">
+          <div class="pixel-lanterns">
+            <div class="lantern l1">🏮</div>
+            <div class="lantern l2">🏮</div>
+          </div>
+          <h1 class="pixel-title">过年回家模拟器</h1>
+          <p class="pixel-subtitle">🎆 七大姑八大姨灵魂拷问 🎆</p>
+          <p class="pixel-hint">
+            亲戚们只知道你的性别和年龄…<br />其他信息需要你亲口告诉他们 😏
+          </p>
+
+          <div class="api-setup">
+            <p class="api-hint">🤖 选择 AI 引擎</p>
+            <select
+              id="aiProviderSelect"
+              class="pixel-input"
+              style="margin-bottom: 8px"
+            >
+              <option value="gemini">🌐 Gemini (谷歌)</option>
+              <option value="deepseek">🔮 DeepSeek (深度求索)</option>
+              <option value="qwen">☁️ 通义千问 (阿里)</option>
+              <option value="zhipu">🧠 智谱GLM (清华)</option>
+              <option value="moonshot">🌙 Moonshot / Kimi</option>
+            </select>
+            <input
+              type="password"
+              id="apiKeyInput"
+              class="pixel-input"
+              placeholder="输入对应的 API Key"
+            />
+            <div id="apiProviderLink">
+              <a
+                href="https://aistudio.google.com/apikey"
+                target="_blank"
+                class="api-link"
+              >
+                免费获取 Gemini API Key →
+              </a>
+            </div>
+          </div>
+
+          <button class="pixel-btn primary" onclick="showCharacterCreation()">
+            🎭 设定角色
+          </button>
+        </div>
+      </section>
+
+      <!-- ========== 角色创建 ========== -->
+      <section class="scene character-scene" id="characterScene">
+        <h2 class="section-title">👤 你的真实人设</h2>
+        <p class="section-hint">这些信息亲戚们并不知道…你可以选择说谎 🤫</p>
+
+        <div class="character-form" id="characterForm">
+          <div class="form-group">
+            <label>称呼</label>
+            <input
+              type="text"
+              id="charName"
+              class="pixel-input"
+              placeholder="输入你的昵称"
+              maxlength="10"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>性别 👁️ 可见</label>
+              <div class="option-pills" id="genderOptions">
+                <button class="pill active" data-value="male">👨 男</button>
+                <button class="pill" data-value="female">👩 女</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>年龄 👁️ 可见</label>
+              <div class="option-pills" id="ageOptions">
+                <button class="pill" data-value="22">22</button>
+                <button class="pill active" data-value="26">26</button>
+                <button class="pill" data-value="30">30</button>
+                <button class="pill" data-value="35">35</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>工作状况 🔒 需告知</label>
+            <div class="option-pills wide" id="jobOptions">
+              <button class="pill" data-value="none">🏠 待业</button>
+              <button class="pill" data-value="private">🏢 私企</button>
+              <button class="pill active" data-value="tech">💻 互联网</button>
+              <button class="pill" data-value="state">🏛️ 体制内</button>
+              <button class="pill" data-value="freelance">🎨 自由职业</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>月薪范围 🔒 需告知</label>
+            <div class="option-pills wide" id="salaryOptions">
+              <button class="pill" data-value="low">💸 5k以下</button>
+              <button class="pill" data-value="medium">💵 5k-15k</button>
+              <button class="pill active" data-value="high">💰 15k-30k</button>
+              <button class="pill" data-value="rich">🤑 30k+</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>感情状态 🔒 需告知</label>
+            <div class="option-pills wide" id="relationshipOptions">
+              <button class="pill active" data-value="single">💔 单身</button>
+              <button class="pill" data-value="dating">💕 恋爱中</button>
+              <button class="pill" data-value="married">💍 已婚</button>
+              <button class="pill" data-value="divorced">💢 离异</button>
+            </div>
+          </div>
+
+          <div class="form-group" id="childrenGroup" style="display: none">
+            <label>有孩子吗 🔒 需告知</label>
+            <div class="option-pills" id="childrenOptions">
+              <button class="pill active" data-value="no">没有</button>
+              <button class="pill" data-value="yes">有</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>购房情况 🔒 需告知</label>
+            <div class="option-pills wide" id="houseOptions">
+              <button class="pill active" data-value="rent">🏠 租房</button>
+              <button class="pill" data-value="mortgage">🏡 房贷中</button>
+              <button class="pill" data-value="owned">🏰 已买房</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>汽车情况 🔒 需告知</label>
+            <div class="option-pills" id="carOptions">
+              <button class="pill active" data-value="no">🚇 无车</button>
+              <button class="pill" data-value="yes">🚗 有车</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="character-preview" id="characterPreview"></div>
+
+        <button class="pixel-btn primary" onclick="startGame()">
+          🏠 开始过年
+        </button>
+      </section>
+
+      <!-- ========== 游戏场景（Galgame 风格） ========== -->
+      <section class="scene game-scene" id="gameScene">
+        <!-- 舞台：背景 + 立绘 -->
+        <div class="vn-stage" id="vnStage">
+          <div class="vn-bg" id="vnBg"></div>
+          <div class="vn-character" id="vnCharacter">
+            <img id="vnCharImg" src="" alt="" />
+          </div>
+          <!-- 环境事件文字 -->
+          <div class="vn-env" id="vnEnv"></div>
+          <!-- 右侧状态条 -->
+          <div class="vn-status" id="vnStatus">
+            <div class="vn-stat" data-label="满意">
+              <div class="vn-stat-bar">
+                <div
+                  class="vn-stat-fill satisfaction"
+                  id="statSatisfaction"
+                  style="height: 50%"
+                ></div>
+              </div>
+              <span class="vn-stat-val" id="valSatisfaction">50</span>
+            </div>
+            <div class="vn-stat" data-label="耐心">
+              <div class="vn-stat-bar">
+                <div
+                  class="vn-stat-fill patience"
+                  id="statPatience"
+                  style="height: 100%"
+                ></div>
+              </div>
+              <span class="vn-stat-val" id="valPatience">100</span>
+            </div>
+            <div class="vn-stat" data-label="怒气">
+              <div class="vn-stat-bar">
+                <div
+                  class="vn-stat-fill anger"
+                  id="statAnger"
+                  style="height: 0%"
+                ></div>
+              </div>
+              <span class="vn-stat-val" id="valAnger">0</span>
+            </div>
+            <div class="vn-stat" data-label="怀疑">
+              <div class="vn-stat-bar">
+                <div
+                  class="vn-stat-fill suspicion"
+                  id="statSuspicion"
+                  style="height: 0%"
+                ></div>
+              </div>
+              <span class="vn-stat-val" id="valSuspicion">0</span>
+            </div>
+          </div>
+          <!-- 顶部信息栏 -->
+          <div class="vn-header">
+            <span class="vn-location" id="vnLocation">🏠 奶奶</span>
+            <div class="vn-player-stats">
+              <span id="pFace">😊50</span>
+              <span id="pMental">💚50</span>
+              <span id="pMoney">🧧¥0</span>
+            </div>
+            <span class="vn-progress" id="vnProgress">1/6</span>
+          </div>
+          
+          <!-- 逃跑按钮 (Moved inside stage) -->
+          <div class="vn-escape" id="vnEscape">
+            <button class="pixel-btn tiny escape-btn" id="btnToilet" title="上厕所（剩余2次）">🚽×2</button>
+            <button class="pixel-btn tiny escape-btn" id="btnPhone" title="假装接电话">📱</button>
+            <button class="pixel-btn tiny escape-btn" id="btnMom" title="向妈妈求助（剩余1次）">🆘×1</button>
+            <button class="pixel-btn tiny escape-btn" id="btnEnd" title="摆烂走人（直接结束，面子-20）" style="color: #ff4d4f; border-color: #ff4d4f;">👋</button>
+            <button id="btnNotebook" class="pixel-btn tiny escape-btn" title="情报本" style="font-size: 14px !important;">📓</button>
+            <button id="btnHistory" class="pixel-btn tiny escape-btn" title="历史记录" style="font-size: 14px !important;">📜</button>
+            <button id="btnToggleUI" class="pixel-btn tiny escape-btn" title="显隐选项" style="font-size: 14px !important; display: none;">👁️</button>
+          </div>
+        </div>
+
+        <!-- 对话框 -->
+        <div class="vn-textbox" id="vnTextbox">
+          <div class="vn-speaker" id="vnSpeaker">奶奶</div>
+          <div class="vn-dialogue" id="vnDialogue">
+            <span id="vnText"></span>
+            <span class="vn-cursor" id="vnCursor">▼</span>
+          </div>
+          <!-- 点击继续的三角指示器 -->
+          <div id="vnNextArrow" class="vn-next-arrow"></div>
+          <!-- 显式回复按钮 (Explicit Interaction) -->
+          <div id="vnReplyBtn" class="vn-reply-btn">💬 点击回复</div>
+        </div>
+
+        <!-- 选项区 -->
+        <div class="vn-choices" id="vnChoices"></div>
+
+        <!-- 自由输入区 -->
+        <div class="vn-input" id="vnInput" style="display: none">
+          <input
+            type="text"
+            id="playerInput"
+            class="pixel-input"
+            placeholder="自由输入你的回答…可用（括号）描述动作"
+          />
+          <button class="pixel-btn" id="sendPlayerInput">发送</button>
+        </div>
+        
+        <!-- 历史记录按钮 -->
+        <!-- 历史记录弹窗 -->
+
+        <!-- 历史记录弹窗 -->
+        <div id="historyModal" class="modal">
+            <div class="modal-content" style="max-width: 500px; height: 80vh; display: flex; flex-direction: column;">
+                <h3 class="pixel-title" style="text-align: center; margin-bottom: 20px;">📜 对话记录</h3>
+                <div id="historyList" style="flex: 1; overflow-y: auto; text-align: left; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 4px;"></div>
+                <button class="pixel-btn primary" onclick="closeHistory()" style="margin-top: 20px; align-self: center;">关闭</button>
+            </div>
+            </div>
+        </div>
+
+        <!-- Phase 2: 情报本弹窗 -->
+        <div id="intelModal" class="modal">
+            <div class="modal-content" style="max-width: 500px; height: 70vh; display: flex; flex-direction: column;">
+                <h3 class="pixel-title" style="text-align: center; margin-bottom: 20px;">🕵️‍♂️ 亲戚情报本</h3>
+                <div id="intelList" style="flex: 1; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 4px;">
+                    <!-- 情报项由JS动态生成 -->
+                    <div class="intel-empty">暂无情报，多听听墙角吧...</div>
+                </div>
+                <button class="pixel-btn primary" onclick="closeIntel()" style="margin-top: 20px; align-self: center;">关闭</button>
+            </div>
+        </div>
+
+
+      </section>
+
+      <!-- ========== 结局 ========== -->
+      <section class="scene ending-scene" id="endingScene">
+        <div class="ending-card">
+          <h2 class="pixel-title" id="endingTitle">🎉 游刃有余</h2>
+          <div class="ending-stats" id="endingStats"></div>
+          <div class="ending-story" id="endingStory"></div>
+          <button class="pixel-btn primary" onclick="restartGame()">
+            🔄 再来一次
+          </button>
+        </div>
+      </section>
+
+      <!-- ========== 结算与传承 (Phase 2) ========== -->
+      <section class="scene settlement-scene" id="settlementScene">
+        <div class="ending-card" style="width: 600px; max-width: 95%;">
+          <h2 class="pixel-title">🧬 世代传承</h2>
+          <div class="settlement-stats" style="margin: 20px 0; display:flex; justify-content:space-around;">
+             <div class="stat-box">本局阅历<div class="stat-val" id="runPoints" style="color:yellow; font-size:24px;">+0</div></div>
+             <div class="stat-box">家族底蕴<div class="stat-val" id="totalPoints" style="color:#00ff00; font-size:24px;">0</div></div>
+          </div>
+          
+          <div class="talent-tree" id="talentTree" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-bottom:20px;">
+              <!-- JS生成天赋卡片 -->
+          </div>
+          
+          <button class="pixel-btn primary" onclick="startNewRun()">
+            👶 开启来世
+          </button>
+        </div>
+      </section>
+
+      <!-- 事件弹窗 -->
+      <div class="event-popup" id="eventPopup">
+        <div class="event-content">
+          <span class="event-icon" id="eventIcon">📱</span>
+          <h3 class="event-title" id="eventTitle">特殊事件</h3>
+          <p class="event-text" id="eventText"></p>
+          <button class="pixel-btn small">点击继续</button>
+        </div>
+      </div>
+
+      <!-- 加载 -->
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-dots">
+          <span>.</span><span>.</span><span>.</span>
+        </div>
+        <p class="loading-text">亲戚正在思考…</p>
+      </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="intel_data.js"></script>
+    <script src="talent.js"></script> <!-- Phase 2: Talent System -->
+    <script src="ui.js"></script>
+    <script src="ai.js"></script>
+    <script src="game.js"></script>
+  </body>
+</html>

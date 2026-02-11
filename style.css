@@ -1,0 +1,838 @@
+/* 过年回家模拟器 v5.0 - Galgame 像素风 */
+
+
+:root {
+    --bg-dark: #1a1a2e;
+    --bg-card: #16213e;
+    --bg-card-light: #1a2744;
+    --primary: #d4380d;
+    --primary-dark: #a8071a;
+    --primary-light: #ff7a45;
+    --gold: #d4a017;
+    --gold-light: #fadb14;
+    --text-primary: #f0f0f0;
+    --text-secondary: #b0b0c0;
+    --text-muted: #6a6a8a;
+    --success: #52c41a;
+    --warning: #faad14;
+    --danger: #ff4d4f;
+    --anger: #cf1322;
+    --guilt: #722ed1;
+    --pixel-border: #5a4a3a;
+    --pixel-highlight: #ffd700;
+    --glass-bg: rgba(15, 15, 40, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-hover: rgba(255, 255, 255, 0.08);
+    --font-pixel: 'ZCOOL QingKe HuangYou', 'Press Start 2P', cursive;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: var(--font-pixel);
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* ==================== 游戏容器 ==================== */
+.game-container {
+    width: 100%;
+    max-width: 480px;
+    height: 100vh;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.scene { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+.scene.active { display: flex; flex-direction: column; }
+
+/* ==================== 开始页面 ==================== */
+.start-scene {
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, #1a1a2e 0%, #2d1810 100%);
+    padding: 20px;
+}
+
+.start-bg { text-align: center; width: 100%; }
+
+.pixel-lanterns { display: flex; justify-content: space-between; padding: 0 40px; margin-bottom: 20px; }
+.lantern { font-size: 48px; animation: sway 2s ease-in-out infinite alternate; }
+.lantern.l2 { animation-delay: 1s; }
+@keyframes sway { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+
+.pixel-title {
+    font-size: 32px;
+    color: var(--gold);
+    text-shadow: 3px 3px 0 #8b4513, -1px -1px 0 #ffd700;
+    margin-bottom: 8px;
+    letter-spacing: 4px;
+}
+.pixel-subtitle { font-size: 14px; color: var(--primary-light); margin-bottom: 16px; }
+.pixel-hint { font-size: 12px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px; }
+
+/* ==================== 像素风输入框 ==================== */
+.pixel-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 3px solid var(--pixel-border);
+    border-radius: 0;
+    color: var(--text-primary);
+    font-family: var(--font-pixel);
+    font-size: 13px;
+    outline: none;
+    box-shadow: inset 2px 2px 0 rgba(0,0,0,0.3);
+}
+.pixel-input:focus { border-color: var(--gold); }
+.pixel-input::placeholder { color: var(--text-muted); }
+select.pixel-input { cursor: pointer; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffd700' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+.api-link {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--gold);
+    text-decoration: none;
+    opacity: 0.8;
+    text-align: right;
+}
+.api-link:hover { opacity: 1; text-decoration: underline; }
+
+/* ==================== 像素风按钮 ==================== */
+.pixel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 32px;
+    background: var(--bg-card);
+    border: 3px solid var(--pixel-border);
+    border-bottom: 5px solid #3a2a1a;
+    border-right: 4px solid #4a3a2a;
+    color: var(--text-primary);
+    font-family: var(--font-pixel);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+.pixel-btn:hover { transform: translateY(-1px); }
+.pixel-btn:active { transform: translateY(2px); border-bottom-width: 3px; }
+.pixel-btn.primary {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-color: #8b0000;
+}
+.pixel-btn.small { padding: 8px 16px; font-size: 12px; }
+.pixel-btn.tiny { padding: 4px 8px; font-size: 11px; }
+
+/* ==================== API 设置 ==================== */
+.api-setup {
+    background: rgba(255,255,255,0.03);
+    border: 2px solid var(--pixel-border);
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+.api-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.api-link { display: inline-block; margin-top: 8px; font-size: 11px; color: var(--primary-light); text-decoration: none; }
+
+/* ==================== 角色创建 ==================== */
+.character-scene { padding: 16px; overflow-y: auto; }
+.section-title { font-size: 20px; text-align: center; color: var(--gold); margin-bottom: 6px; }
+.section-hint { font-size: 12px; text-align: center; color: var(--text-muted); margin-bottom: 16px; }
+
+.character-form { background: var(--bg-card); border: 2px solid var(--pixel-border); padding: 16px; margin-bottom: 16px; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+.option-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill {
+    padding: 6px 12px;
+    background: var(--bg-card-light);
+    border: 2px solid var(--pixel-border);
+    color: var(--text-secondary);
+    font-family: var(--font-pixel);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.pill:hover { border-color: var(--gold); color: var(--text-primary); }
+.pill.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+.character-preview {
+    background: var(--bg-card);
+    border: 2px solid var(--pixel-border);
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+.preview-title { color: var(--gold); font-weight: 600; margin-bottom: 6px; }
+.preview-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.preview-tag { background: rgba(212,56,13,0.2); color: var(--primary-light); padding: 3px 8px; font-size: 11px; }
+
+/* ========================================================
+   VN 游戏舞台 — 全屏叠层（对话框覆盖在舞台上方）
+   ======================================================== */
+.game-scene {
+    position: relative;
+    overflow: hidden;
+}
+
+/* === 舞台：全屏背景 + 立绘 === */
+.vn-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+/* 背景（图片优先，CSS兜底） */
+.vn-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('assets/bg_livingroom.png');
+    background-size: cover;
+    background-position: center;
+    /* CSS兜底背景 */
+    background-color: #3a2520;
+}
+/* 如果没有背景图，显示CSS绘制的简易背景 */
+.vn-bg.no-image {
+    background-image: none;
+    background:
+        linear-gradient(180deg, #4a3028 0%, #3d2720 12%, #c4956a 12%, #c4956a 50%, #5a3a28 50%, #4a2a18 100%);
+}
+/* 暗角效果让文字更清晰 */
+.vn-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%);
+    pointer-events: none;
+}
+
+/* === 立绘 === */
+.vn-character {
+    position: absolute;
+    bottom: 18%;
+    left: 2%;
+    width: 55%;
+    height: 75%;
+    overflow: visible;
+    z-index: 5;
+    transition: filter 0.4s ease;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
+}
+.vn-character img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    image-rendering: auto;
+    transition: all 0.3s ease;
+}
+/* 情绪特效 */
+.vn-character.mood-happy { filter: drop-shadow(0 0 15px rgba(255,215,0,0.4)); }
+.vn-character.mood-normal { filter: drop-shadow(0 0 8px rgba(255,255,255,0.15)); }
+.vn-character.mood-unhappy { filter: drop-shadow(0 0 10px rgba(255,77,79,0.3)) saturate(0.85); }
+.vn-character.mood-furious {
+    filter: drop-shadow(0 0 18px rgba(207,19,34,0.6)) saturate(1.3);
+    animation: shake 0.3s infinite;
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* Emoji fallback */
+.vn-character .emoji-avatar {
+    font-size: 120px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* === 顶部信息栏（玻璃质感） === */
+.vn-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 30;
+    font-size: 12px;
+}
+.vn-location { color: var(--gold); }
+.vn-player-stats { display: flex; gap: 10px; color: var(--text-secondary); font-size: 11px; }
+.vn-progress { color: var(--text-muted); }
+
+/* === 右侧状态条（玻璃质感） === */
+.vn-status {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-60%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 25;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 10px 8px;
+}
+.vn-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.vn-stat::after {
+    content: attr(data-label);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: bold;
+}
+.vn-stat-bar {
+    width: 10px;
+    height: 50px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+}
+.vn-stat-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 2px;
+    transition: height 0.5s ease;
+}
+.vn-stat-fill.satisfaction { background: var(--success); }
+.vn-stat-fill.patience { background: linear-gradient(0deg, #faad14, #52c41a); }
+.vn-stat-fill.anger { background: var(--anger); }
+.vn-stat-fill.suspicion { background: var(--guilt); }
+.vn-stat-val { font-size: 13px; color: var(--text-secondary); font-weight: bold; }
+
+/* 环境事件文字 */
+.vn-env {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    color: #fff;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: 25;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    padding: 6px 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+.vn-env.visible { opacity: 1; }
+
+/* ========================================================
+   对话框 — 固定在底部，覆盖在舞台上
+   ======================================================== */
+.vn-textbox {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--glass-border);
+    padding: 16px 20px 12px;
+    min-height: 120px;
+    cursor: pointer;
+    z-index: 40;
+    transition: min-height 0.3s ease, padding 0.3s ease;
+    overflow: visible !important; /* Allow Reply Btn to float outside */
+}
+.vn-textbox.collapsed {
+    min-height: 0;
+    padding: 10px 20px 8px;
+}
+.vn-textbox.collapsed .vn-dialogue {
+    display: none;
+}
+/* 上方装饰线 */
+.vn-textbox::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.4), transparent);
+}
+
+.vn-speaker {
+    font-size: 18px; /* 放大说话人名字 */
+    font-weight: bold;
+    color: var(--gold);
+    margin-bottom: 8px;
+    padding-left: 2px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+.vn-speaker::before { content: '【'; color: rgba(255,215,0,0.5); }
+.vn-speaker::after { content: '】'; color: rgba(255,215,0,0.5); }
+.vn-speaker:empty { display: none; }
+.vn-speaker:empty::before, .vn-speaker:empty::after { display: none; }
+
+.vn-dialogue {
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    min-height: 40px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    font-weight: 500;
+}
+
+.vn-cursor {
+    display: none;
+    animation: blink 0.8s infinite;
+    color: var(--gold);
+    margin-left: 4px;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ========================================================
+   选项区 — 玻璃质感，覆盖在舞台上
+   ======================================================== */
+.vn-choices {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    position: absolute;
+    bottom: 25px; /* Back to bottom (inside textbox area) */
+    left: 110px;   /* Shift RIGHT to avoid Sidebar AND Name Tag */
+    right: 20px;
+    z-index: 60;   /* Higher than everything */
+    padding: 0;
+    max-height: 50vh;
+    overflow-y: auto;
+    /* Space for Name Tag (usually top-left of textbox). 
+       Textbox is height ~120px. 
+       If options are bottom:20px, they cover textbox.
+       Name tag is at bottom: 130px approx?
+       User said "Options occupied 'Grandma' bar".
+       We should add padding-top or margin-top to options container? 
+       Or just ensure options don't obscure the name tag.
+       Let's try bottom: 10px, but with a gap at the top?
+       Actually, if we move Toggle button to LEFT, and History to Top Right, it's cleaner.
+    */
+    background: transparent;
+    pointer-events: none;
+}
+.vn-choices.visible { display: flex; }
+/* Triangle Indicator */
+.vn-next-arrow {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 15px solid var(--gold);
+    animation: bounce 1s infinite;
+    cursor: pointer;
+    z-index: 100; /* Max visibility */
+    display: none; 
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8));
+}
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+.vn-next-arrow.active { display: block; }
+
+/* Reply Button - Explicit Interaction */
+.vn-reply-btn {
+    position: absolute;
+    /* Position relative to .vn-textbox (parent) */
+    top: -46px; /* Place ABOVE the textbox */
+    right: 20px; /* Align Right */
+    left: auto;
+    bottom: auto;
+    
+    background: var(--gold);
+    color: #3e2723;
+    border: 2px solid #fff;
+    padding: 8px 20px;
+    font-family: var(--font-pixel);
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 200; /* Ensure visibility */
+    display: none;
+    box-shadow: 0 4px 0 #8d6e63;
+    animation: pulse-reply 2s infinite;
+}
+.vn-reply-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #8d6e63;
+}
+.vn-reply-btn.active { display: block; }
+@keyframes pulse-reply {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+.vn-choices.visible { display: flex; }
+/* When choices (container) are hidden via toggle, we use opacity/visibility */
+.vn-choices.hidden-ui { opacity: 0; pointer-events: none; }
+.vn-choices.visible { display: flex; }
+
+.vn-choice {
+    pointer-events: auto; /* Buttons are clickable */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    
+    /* 极致透明磨砂感 (1% Design) */
+    background: rgba(30, 30, 50, 0.4); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 3px solid var(--gold); /* Gold accent */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    color: rgba(255, 255, 255, 0.95);
+    font-family: var(--font-pixel);
+    font-size: 15px;
+    text-align: left;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    
+    /* Layout fix for long text */
+    flex-direction: column;
+    align-items: flex-start;
+    white-space: normal; /* Allow wrapping */
+    height: auto;
+}
+.vn-choice:hover {
+    background: rgba(60, 60, 90, 0.6);
+    transform: translateX(5px);
+    border-color: var(--gold);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+/* Removed duplicate hover style */
+.vn-choice:active {
+    transform: translateX(3px) scale(0.98);
+}
+
+/* 风险标签 */
+/* 风险标签 (Minimal Design - Below Text) */
+.vn-choice .risk-tag {
+    font-size: 10px;
+    margin-top: 6px; /* Space between text and tag */
+    padding: 0;      /* Minimal padding */
+    border: none;    /* Remove border */
+    background: transparent;
+    opacity: 0.9;
+    align-self: flex-start; /* Align left */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+/* Use text color and icons maybe? or just text */
+.risk-tag.safe::before { content: '🟢'; font-size: 8px; }
+.risk-tag.risky::before { content: '🟡'; font-size: 8px; }
+.risk-tag.danger::before { content: '🔴'; font-size: 8px; }
+
+.risk-tag.safe { color: #d9f7be; }
+.risk-tag.risky { color: #fff1b8; }
+.risk-tag.danger { color: #ffccc7; }
+
+/* 高风险选项 - Subtle Warning */
+.vn-choice.dangerous {
+    border-color: rgba(255, 77, 79, 0.4);
+    background: rgba(40, 0, 0, 0.4); /* Very subtle red tint */
+}
+.vn-choice.dangerous:hover {
+    border-color: #ff4d4f;
+    box-shadow: 0 0 15px rgba(255, 77, 79, 0.1);
+}
+
+.vn-choice.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    filter: grayscale(0.5);
+}
+
+/* ========================================================
+   自由输入 — 玻璃质感
+   ======================================================== */
+.vn-input {
+    display: none;
+    gap: 6px;
+    position: absolute;
+    bottom: 180px; /* Enhanced: Move up to avoid covering escape tools */
+    left: 12px;
+    right: 12px;
+    z-index: 300; /* Higher than Reply Button (200) */
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 10px;
+}
+.vn-input .pixel-input {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+}
+
+/* ========================================================
+   逃跑按钮 — 玻璃质感
+   ======================================================== */
+.vn-escape {
+    position: absolute;
+    top: 60px;
+    left: 12px;
+    right: auto;
+    bottom: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 50;
+    opacity: 0.9;
+    transition: opacity 0.3s;
+}
+.vn-escape:hover { opacity: 1; }
+.escape-btn {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+}
+.escape-btn:disabled { opacity: 0.25; pointer-events: none; }
+
+/* ==================== 事件弹窗 ==================== */
+.event-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+.event-popup.active { display: flex; }
+.event-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    max-width: 340px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.event-icon { font-size: 48px; display: block; margin-bottom: 12px; }
+.event-title { font-size: 16px; color: var(--gold); margin-bottom: 8px; }
+.event-text { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+
+/* ==================== 加载 ==================== */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,30,0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+.loading-overlay.active { display: flex; }
+.loading-dots { font-size: 36px; color: var(--gold); letter-spacing: 8px; }
+.loading-dots span { animation: loadBounce 1.2s ease-in-out infinite; display: inline-block; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes loadBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } }
+.loading-text { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+
+/* ==================== 结局 ==================== */
+.ending-scene {
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
+}
+.ending-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 28px 20px;
+    text-align: center;
+    width: 100%;
+}
+.ending-stats { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin: 20px 0; }
+.ending-stat { text-align: center; min-width: 50px; }
+.ending-stat-value { font-size: 22px; color: var(--gold); }
+.ending-stat-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.ending-story {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+/* ==================== 滚动条 ==================== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+/* ==================== 响应式 ==================== */
+@media (max-width: 480px) {
+    .game-container { max-width: 100%; }
+    .vn-character { width: 160px; height: 210px; bottom: 26%; }
+    .pixel-title { font-size: 26px; }
+}
+
+@media (min-height: 700px) {
+    .vn-textbox { min-height: 120px; padding: 16px 20px 14px; }
+    .vn-character { height: 290px; width: 220px; }
+}
+
+/* ==================== 历史记录 ==================== */
+.history-item {
+    margin-bottom: 12px;
+    border-bottom: 1px dashed rgba(255,215,0,0.2);
+    padding-bottom: 8px;
+}
+.history-speaker {
+    color: var(--gold);
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+.history-text {
+    color: #eee;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* ==================== 历史记录 ==================== */
+.history-item {
+    margin-bottom: 12px;
+    border-bottom: 1px dashed rgba(255,215,0,0.2);
+    padding-bottom: 8px;
+}
+
+/* ==================== 破罐子破摔模式 (Shameless Mode) ==================== */
+body.shameless-mode #vnBg,
+body.shameless-mode #vnCharacter,
+body.shameless-mode #vnEnv {
+    filter: grayscale(100%) contrast(1.2); /* 黑白 + 高对比 */
+}
+body.shameless-mode #vnLocation {
+    filter: grayscale(100%);
+}
+/* 主角区域保留色彩，但给一点破败感 */
+body.shameless-mode .vn-textbox {
+    border-color: #555;
+    background: rgba(20, 20, 20, 0.85);
+}
+body.shameless-mode #pFace {
+    color: #999 !important; /* 死灰色 */
+    text-decoration: line-through;
+}
+/* 选项变为“恶人”风格 */
+body.shameless-mode .vn-choice:hover {
+    background: rgba(100, 0, 0, 0.5); /* 暗红 */
+    border-color: #ff4d4f;
+}
+.history-speaker {
+    color: var(--gold);
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+.history-text {
+    color: #eee;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* ==================== 通用弹窗 (Modal) ==================== */
+.modal {
+    display: none; /* Default hidden */
+    position: fixed;
+    inset: 0;
+    z-index: 200; /* Highest priority */
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+.modal[style*="display: flex"] {
+    display: flex !important;
+}
+
+.modal-content {
+    background: var(--glass-bg);
+    border: 2px solid var(--pixel-border);
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+    color: var(--text-primary);
+}
+
+.modal-content h3 {
+    color: var(--gold);
+    text-shadow: 2px 2px 0 #000;
+}
+.intel-item {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #444;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+}

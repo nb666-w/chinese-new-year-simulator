@@ -1,0 +1,20 @@
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# Project specific
+tmp/
+.gemini/
+.env
+node_modules/
+dist/
+build/
+coverage/
+*.lock
+
+# User specific (if any)
+*.key
+*.pem
