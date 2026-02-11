@@ -50,4 +50,4 @@
 本项目采用 [MIT License](LICENSE) 开源。欢迎修改、二创或用于学习目的。
 
 ---
-*Created by [Your Name] with ❤️ for Chinese New Year.*
+*Created by [王姐改衣] with ❤️ for Chinese New Year.*
