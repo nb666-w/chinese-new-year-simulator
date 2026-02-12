@@ -428,25 +428,17 @@ select.pixel-input { cursor: pointer; -webkit-appearance: none; appearance: none
     flex-direction: column;
     gap: 8px;
     position: absolute;
-    bottom: 25px; /* Back to bottom (inside textbox area) */
-    left: 110px;   /* Shift RIGHT to avoid Sidebar AND Name Tag */
-    right: 20px;
+    bottom: 15px; /* Lower slightly */
+    left: 10px;
+    right: 10px; /* Full width minus padding */
     z-index: 60;   /* Higher than everything */
-    padding: 0;
-    max-height: 50vh;
+    padding: 10px;
+    padding-bottom: 40px; /* Extra padding for scrolling */
+    max-height: 60vh; /* Allow more height */
     overflow-y: auto;
-    /* Space for Name Tag (usually top-left of textbox). 
-       Textbox is height ~120px. 
-       If options are bottom:20px, they cover textbox.
-       Name tag is at bottom: 130px approx?
-       User said "Options occupied 'Grandma' bar".
-       We should add padding-top or margin-top to options container? 
-       Or just ensure options don't obscure the name tag.
-       Let's try bottom: 10px, but with a gap at the top?
-       Actually, if we move Toggle button to LEFT, and History to Top Right, it's cleaner.
-    */
+    -webkit-overflow-scrolling: touch; /* Smooth scroll */
     background: transparent;
-    pointer-events: none;
+    pointer-events: auto; /* Ensure container catches scroll events */
 }
 .vn-choices.visible { display: flex; }
 /* Triangle Indicator */
